@@ -20,7 +20,7 @@ var mainState = {
         this.monk = this.game.add.sprite(50,1000,'monkey')
         
         this.ground = this.game.add.sprite(0,1200,'platform')
-        this.ground.scale.setTo(3,1);
+        this.ground.scale.setTo(2,1);
         
         this.monk.animations.add('game',[0,1,2], 5, true);
         this.monk.animations.play('game')
