@@ -1,6 +1,7 @@
-var game = new Phaser.Game(900,1200, Phaser.AUTO, 'gameDiv')
+var game = new Phaser.Game(400,400, Phaser.AUTO, 'gameDiv')
 var player;
 var cursors;
+var right = true;
 var mainState = {
     preload: function() { 
         //this.game.load.spritesheet('monkey','assets/walk.png',72,115)
@@ -13,11 +14,12 @@ var mainState = {
           //this.game.load.image('background','assets/tests/debug-grid-1920x1920.png');
     },
     create: function() { 
-        this.game.physics.startSystem(Phaser.Physics.P2JS)
+        this.game.physics.startSystem(Phaser.Physics.ARCADE)
         this.sky = this.game.add.sprite(0,0,"sky")
         this.sky.scale.setTo(2,2)
         this.tree = this.game.add.sprite(0,0,"tree")
         this.monk = this.game.add.sprite(50,1000,'monkey')
+        this.monk.anchor.setTo(.5,.5);
         this.ground = this.game.add.sprite(0,1200,'platform')
         //player = this.game.add.sprite(game.world.centerX, game.world.centerY, 'monk');
         //game.physics.p2.enable(this.monk);
@@ -46,9 +48,18 @@ var mainState = {
         if (cursors.left.isDown){
             this.monk.body.velocity.x = -350;
             this.monk.animations.play('game');
+            if(right) {right =  false
+            this.monk.scale.x*=-1
+            }
         }
         else if (cursors.right.isDown){
-            this.monk.body.velocity.x = 350;
+            this.monk.body.velocity.x = 350
+            if(!right) {
+                right =  true
+                this.monk.scale.x*=-1
+            }
+
+
             this.monk.animations.play('game');
         }
         else{
@@ -59,19 +70,7 @@ var mainState = {
             this.monk.body.velocity.y = -350;
         }
 
-        if (cursors.up.isDown){
-            this.monk.body.moveUp(300)
-        }
-        else if (cursors.down.isDown){
-            this.monk.body.moveDown(300);
-        }
-
-        if (cursors.left.isDown){
-            this.monk.body.velocity.x = -300;
-        }
-        else if (cursors.right.isDown){
-        this.monk.body.moveRight(300);
-        }
+        
     },
     render: function() {
 
@@ -111,7 +110,7 @@ var screenState = {
     create: function() {
         this.game.stage.backgroundColor = '#182d3b';
         this.background = this.game.add.tileSprite(0, 0, 900, 1200, 'background');
-        this.button = this.game.add.button(400, 400, 'button', this.actionOnClick, this, 2, 1, 0);
+        this.button = this.game.add.button(this.game.world.centerX, this.game.world.centerY, 'button', this.actionOnClick, this, 2, 1, 0);
         this.button.onInputOver.add(this.over, this);
         this.button.onInputOut.add(this.out, this);
         this.button.onInputUp.add(this.up, this);
