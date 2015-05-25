@@ -10,8 +10,10 @@ var mainState = {
          this.game.load.image('sky','assets/sky.png')
          this.game.load.image('platform','assets/platform.png')
          this.game.load.image('sky','assets/sky.png')
+          //this.game.load.image('background','assets/tests/debug-grid-1920x1920.png');
     },
-
+     var player;
+     var cursors;
     create: function() { 
         this.game.physics.startSystem(Phaser.Physics.ARCADE)
         this.sky = this.game.add.sprite(0,0,"sky")
@@ -19,6 +21,9 @@ var mainState = {
         this.tree = this.game.add.sprite(0,0,"tree")
         this.monk = this.game.add.sprite(50,1000,'monkey')
         this.ground = this.game.add.sprite(0,1200,'platform')
+//player = this.game.add.sprite(game.world.centerX, game.world.centerY, 'monk');
+//game.physics.p2.enable(this.monk);
+       // this.back=this.game.add.sprite(0,0,'background')
         this.ground.scale.setTo(1.8,0.8);
         this.monk.animations.add('game',[0,1,2], 5, true);
         this.monk.animations.play('game')
@@ -30,6 +35,13 @@ var mainState = {
         this.ground.body.gravity.y = 300;
         this.ground.body.immovable = true;
         this.ground.body.collideWorldBounds = true;
+
+
+        this.game.add.tileSprite(0, 0, 900, 1200, 'sky');
+    this.game.world.setBounds(0, 0, 900, 1200);
+    this.game.physics.startSystem(Phaser.Physics.P2JS);
+    cursors = this.game.input.keyboard.createCursorKeys();
+    game.camera.follow(this.monk);
      },
 
     update: function() {
@@ -55,7 +67,38 @@ var mainState = {
     {
         this.monk.body.velocity.y = -350;
     }
-    },
+
+
+
+
+
+     this.monk.body.setZeroVelocity();
+
+    if (cursors.up.isDown)
+    {
+        this.monk.body.moveUp(300)
+    }
+    else if (cursors.down.isDown)
+    {
+        this.monk.body.moveDown(300);
+    }
+
+    if (cursors.left.isDown)
+    {
+        this.monk.body.velocity.x = -300;
+    }
+    else if (cursors.right.isDown)
+    {
+        this.monk.body.moveRight(300);
+    }
+},
+
+
+    render: function() {
+
+    game.debug.cameraInfo(game.camera, 32, 32);
+    game.debug.spriteCoords(this.monk, 32, 500);
+   },
 
     jump: function() { 
     	    
@@ -112,55 +155,8 @@ out: function() {
 },
 }
 
-//basic follow using camera
-var camState={
-preload: function() {
-    this.game.load.image('background','assets/debug-grid-1920x1920.png');
-    this.game.load.image('player','assets/phaser-dude.png');
-},
-
-var player;
-var cursors;
-create: function() {
-    this.game.add.tileSprite(0, 0, 1920, 1920, 'background');
-    this.game.world.setBounds(0, 0, 1920, 1920);
-    this.game.physics.startSystem(Phaser.Physics.P2JS);
-    this.player = this.game.add.sprite(game.world.centerX, game.world.centerY, 'player');
-    this.game.physics.p2.enable(player);
-    this.cursors = this.game.input.keyboard.createCursorKeys();
-    this.game.camera.follow(player);
-},
-update: function() {
-    player.body.setZeroVelocity();
-    if (cursors.up.isDown)
-    {
-        player.body.moveUp(300)
-    }
-    else if (cursors.down.isDown)
-    {
-        player.body.moveDown(300);
-    }
-    if (cursors.left.isDown)
-    {
-        player.body.velocity.x = -300;
-    }
-    else if (cursors.right.isDown)
-    {
-        player.body.moveRight(300);
-    }
-
-},
-render: function() {
-    game.debug.cameraInfo(game.camera, 32, 32);
-    game.debug.spriteCoords(player, 32, 500);
-},
-}
-
 game.state.add('main', mainState)  
 game.state.start('main')
 
 game.state.add('screen',screenState)
 game.state.start('screen')
-
-game.state.add('camera',camState)
-game.state.start('camera') 
