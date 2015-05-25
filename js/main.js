@@ -1,4 +1,5 @@
 var game = new Phaser.Game(900,1200, Phaser.AUTO, 'gameDiv')
+
 var mainState = {
 
     preload: function() { 
@@ -73,13 +74,93 @@ var mainState = {
 	hitGround: function() {  
   
 	},
-
 }
 
+   //action on button click
+var screenState = {
+    preload: function() {
+    this.game.load.spritesheet('button', 'assets/button_sprite_sheet.png', 193, 71);
+    this.game.load.image('background','assets/starfield.jpg');
+},
 
+var button;
+var background;
 
+create: function() {
+    this.game.stage.backgroundColor = '#182d3b';
+    this.background = this.game.add.tileSprite(0, 0, 900, 1200, 'background');
+    this.button = this.game.add.button(game.world.centerX - 95, 400, 'button', actionOnClick, this, 2, 1, 0);
+    this.button.onInputOver.add(over, this);
+    this.button.onInputOut.add(out, this);
+    this.button.onInputUp.add(up, this);
+},
 
+up: function() {
+    console.log('button up', arguments);
+},
 
+over: function() {
+    console.log('button over');
+},
+
+out: function() {
+    console.log('button out');
+},
+
+ actionOnClick: function(){
+    background.visible =! background.visible;
+},
+}
+
+//basic follow using camera
+var camState={
+preload: function() {
+    this.game.load.image('background','assets/debug-grid-1920x1920.png');
+    this.game.load.image('player','assets/phaser-dude.png');
+},
+
+var player;
+var cursors;
+create: function() {
+    this.game.add.tileSprite(0, 0, 1920, 1920, 'background');
+    this.game.world.setBounds(0, 0, 1920, 1920);
+    this.game.physics.startSystem(Phaser.Physics.P2JS);
+    this.player = this.game.add.sprite(game.world.centerX, game.world.centerY, 'player');
+    this.game.physics.p2.enable(player);
+    this.cursors = this.game.input.keyboard.createCursorKeys();
+    this.game.camera.follow(player);
+},
+update: function() {
+    player.body.setZeroVelocity();
+    if (cursors.up.isDown)
+    {
+        player.body.moveUp(300)
+    }
+    else if (cursors.down.isDown)
+    {
+        player.body.moveDown(300);
+    }
+    if (cursors.left.isDown)
+    {
+        player.body.velocity.x = -300;
+    }
+    else if (cursors.right.isDown)
+    {
+        player.body.moveRight(300);
+    }
+
+},
+render: function() {
+    game.debug.cameraInfo(game.camera, 32, 32);
+    game.debug.spriteCoords(player, 32, 500);
+},
+}
 
 game.state.add('main', mainState)  
-game.state.start('main')  
+game.state.start('main')
+
+game.state.add('screen',screenState)
+game.state.start('screen')
+
+game.state.add('camera',camState)
+game.state.start('camera') 
