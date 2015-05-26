@@ -22,7 +22,7 @@ var mainState = {
         this.sky.scale.setTo(2,2)
         this.tree = this.game.add.sprite(0,0,"tree")
         this.monk = this.game.add.sprite(50,1000,'monkey')
-        this.monk.anchor.setTo(.5,.5);
+        this.monk.anchor.setTo(.5,.5)
         this.monk.scale.setTo(.8,.8)
         this.ground = this.game.add.sprite(0,1200,'platform')
         //player = this.game.add.sprite(game.world.centerX, game.world.centerY, 'monk')
@@ -105,21 +105,21 @@ var button
 var background
 var welcomeScreenState = {
     preload: function() {
-    this.game.load.spritesheet('button', 'assets/button_sprite_sheet.png', 193, 71);
-    this.game.load.image('background','assets/screen.png');
+    this.game.load.spritesheet('button', 'assets/button_sprite_sheet.png', 193, 71)
+    this.game.load.image('background','assets/screen.png')
     },
 
 
 
     create: function() {
-        this.game.stage.backgroundColor = '#182d3b';
-        this.background = this.game.add.tileSprite(0, 0, 900, 1200, 'background');
-        this.button = this.game.add.button(this.game.world.centerX, this.game.world.centerY, 'button', this.actionOnClick, this, 2, 1, 0);
-        this.button.anchor.setTo(.5,-1);
-        this.button.scale.setTo(.5,.5);
-        this.button.onInputOver.add(this.over, this);
-        this.button.onInputOut.add(this.out, this);
-        this.button.onInputUp.add(this.up, this);
+        this.game.stage.backgroundColor = '#182d3b'
+        this.background = this.game.add.tileSprite(0, 0, 900, 1200, 'background')
+        this.button = this.game.add.button(this.game.world.centerX, this.game.world.centerY, 'button', this.actionOnClick, this, 2, 1, 0)
+        this.button.anchor.setTo(.5,-1)
+        this.button.scale.setTo(.5,.5)
+        this.button.onInputOver.add(this.over, this)
+        this.button.onInputOut.add(this.out, this)
+        this.button.onInputUp.add(this.up, this)
     },
 
     up: function() {
