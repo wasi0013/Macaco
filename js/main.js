@@ -8,7 +8,7 @@ var mainState = {
         //this.game.load.spritesheet('monkey','assets/walk.png',72,115)
          this.game.load.image('tree', 'assets/tree.png')
          this.game.stage.backgroundColor = "#ffffff"
-         this.game.load.spritesheet('monkey','assets/walk.png',71.5,109)
+         this.game.load.spritesheet('monkey','assets/jump.png',82,108)
          this.game.load.image('sky','assets/sky.png')
          this.game.load.image('platform','assets/platform.png')
          this.game.load.image('sky','assets/sky.png')
@@ -42,7 +42,7 @@ var mainState = {
         
         
         //create animations
-        this.monkey.animations.add('game',[0,1,2], 5, true)
+        this.monkey.animations.add('game',[3,0,1,2], 5, true)
         
         //start animation
         this.monkey.animations.play('game')
@@ -94,12 +94,13 @@ var mainState = {
         }
         else{
             this.monkey.animations.stop()
-            this.monkey.frame = 2
+            this.monkey.frame = 5
         }
         //commented for testing purpose, it will allow the monkey to jump infinitely
         //if (cursors.up.isDown && this.monkey.body.touching.down){
         if (cursors.up.isDown ){
             this.monkey.body.velocity.y = -350
+            this.monkey.frame = 1
         }
 
         
