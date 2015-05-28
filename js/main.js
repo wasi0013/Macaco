@@ -2,6 +2,7 @@ var game = new Phaser.Game(400,400, Phaser.AUTO, 'gameDiv')
 var player
 var cursors
 var right = true
+
 var mainState = {
     preload: function() { 
         //this.game.load.spritesheet('monkey','assets/walk.png',72,115)
@@ -13,65 +14,92 @@ var mainState = {
          this.game.load.image('sky','assets/sky.png')
           //this.game.load.image('background','assets/tests/debug-grid-1920x1920.png')
     },
-    create: function() { 
+    create: function() {
+        //make the GAME full screen 
         this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL
         this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
         this.game.scale.refresh()
+        
+        //start the system
+        //this.game.physics.startSystem(Phaser.Physics.P2JS)
         this.game.physics.startSystem(Phaser.Physics.ARCADE)
+        
+        //add preloaded sprites to the game
         this.sky = this.game.add.sprite(0,0,"sky")
-        this.sky.scale.setTo(2,2)
         this.tree = this.game.add.sprite(0,0,"tree")
-        this.monk = this.game.add.sprite(50,1000,'monkey')
-        this.monk.anchor.setTo(.5,.5)
-        this.monk.scale.setTo(.8,.8)
+        this.monkey = this.game.add.sprite(50,1000,'monkey')
         this.ground = this.game.add.sprite(0,1200,'platform')
-        //player = this.game.add.sprite(game.world.centerX, game.world.centerY, 'monk')
-        //game.physics.p2.enable(this.monk)
-        // this.back=this.game.add.sprite(0,0,'background')
+        
+        //scales and anchors
+        this.monkey.anchor.setTo(.5,.5)
+        this.monkey.scale.setTo(.8,.8)
+        this.sky.scale.setTo(2,2)
         this.ground.scale.setTo(1.8,0.8)
-        this.monk.animations.add('game',[0,1,2], 5, true)
-        this.monk.animations.play('game')
+        
+        //player = this.game.add.sprite(game.world.centerX, game.world.centerY, 'monkey')
+        //game.physics.p2.enable(this.monkey)
+        // this.back=this.game.add.sprite(0,0,'background')
+        
+        
+        //create animations
+        this.monkey.animations.add('game',[0,1,2], 5, true)
+        
+        //start animation
+        this.monkey.animations.play('game')
+        
+        //apply physics on the objects
         game.physics.arcade.enable(this.tree)
-        game.physics.arcade.enable(this.monk)
+        game.physics.arcade.enable(this.monkey)
         game.physics.arcade.enable(this.ground)
-        this.monk.body.gravity.y = 300
-        this.monk.body.collideWorldBounds = true
+        
+        this.monkey.body.gravity.y = 300
         this.ground.body.gravity.y = 300
         this.ground.body.immovable = true
+
+        // stop falling from the world's bound
+        this.monkey.body.collideWorldBounds = true
         this.ground.body.collideWorldBounds = true
+        
         //this.game.add.tileSprite(0, 0, 900, 1200, 'sky')
+        
+        //camera bounds and activate follow
         this.game.world.setBounds(0, 0, 900, 1200)
-        //this.game.physics.startSystem(Phaser.Physics.P2JS)
+        game.camera.follow(this.monkey)
+        
+        //keyboard inputs
         cursors = this.game.input.keyboard.createCursorKeys()
-        game.camera.follow(this.monk)
+        
      },
      update: function() {
-        game.physics.arcade.collide(this.monk, this.ground)
-        cursors = game.input.keyboard.createCursorKeys()
-        this.monk.body.velocity.x=0
+        //detect monkey and ground collision
+        game.physics.arcade.collide(this.monkey, this.ground)
+        
+        this.monkey.body.velocity.x=0
         if (cursors.left.isDown){
-            this.monk.body.velocity.x = -350
-            this.monk.animations.play('game')
+            this.monkey.body.velocity.x = -350
+            this.monkey.animations.play('game')
             if(right) {right =  false
-            this.monk.scale.x*=-1
+            this.monkey.scale.x*=-1
             }
         }
         else if (cursors.right.isDown){
-            this.monk.body.velocity.x = 350
+            this.monkey.body.velocity.x = 350
             if(!right) {
                 right =  true
-                this.monk.scale.x*=-1
+                this.monkey.scale.x*=-1
             }
 
 
-            this.monk.animations.play('game')
+            this.monkey.animations.play('game')
         }
         else{
-            this.monk.animations.stop()
-            this.monk.frame = 2
+            this.monkey.animations.stop()
+            this.monkey.frame = 2
         }
-        if (cursors.up.isDown && this.monk.body.touching.down){
-            this.monk.body.velocity.y = -350
+        //commented for testing purpose, it will allow the monkey to jump infinitely
+        //if (cursors.up.isDown && this.monkey.body.touching.down){
+        if (cursors.up.isDown ){
+            this.monkey.body.velocity.y = -350
         }
 
         
@@ -79,7 +107,7 @@ var mainState = {
     render: function() {
 
     //game.debug.cameraInfo(game.camera, 32, 32)
-    //game.debug.spriteCoords(this.monk, 32, 500)
+    //game.debug.spriteCoords(this.monkey, 0, 32)
    },
     jump: function() { 
             
@@ -92,7 +120,7 @@ var mainState = {
     addCreeper: function(x, y) {  
     
     },
-    addEnemyMonkey: function() {
+    addEnemymonkey: function() {
    
     },
     hitGround: function() {  
@@ -112,13 +140,19 @@ var welcomeScreenState = {
 
 
     create: function() {
+        //make the GAME full screen 
+        this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL
+        this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
+        this.game.scale.refresh()
+
         this.game.stage.backgroundColor = '#182d3b'
         this.background = this.game.add.tileSprite(0, 0, 900, 1200, 'background')
+        
         this.button = this.game.add.button(this.game.world.centerX, this.game.world.centerY, 'button', this.actionOnClick, this, 2, 1, 0)
         this.button.anchor.setTo(.5,-1)
         this.button.scale.setTo(.5,.5)
-        this.button.onInputOver.add(this.over, this)
-        this.button.onInputOut.add(this.out, this)
+        //this.button.onInputOver.add(this.over, this)
+        //this.button.onInputOut.add(this.out, this)
         this.button.onInputUp.add(this.up, this)
     },
 
