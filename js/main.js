@@ -4,7 +4,7 @@ var cursors
 var right = true
 var counter=0
 var swipeLeft=false,swipeRight=false
-
+var swipeCoordX, swipeCoordY, swipeCoordX2, swipeCoordY2, swipeMinDistance = 100
 var mainState = {
     preload: function() { 
         //this.game.load.spritesheet('monkey','assets/walk.png',72,115)
@@ -73,11 +73,7 @@ var mainState = {
         
         //keyboard inputs
         cursors = this.game.input.keyboard.createCursorKeys()
-         var swipeCoordX,
-        swipeCoordY,
-        swipeCoordX2,
-        swipeCoordY2,
-        swipeMinDistance = 100
+        
 
     this.game.input.onDown.add(function(pointer) {
         swipeCoordX = pointer.clientX
@@ -89,17 +85,13 @@ var mainState = {
         swipeCoordY2 = pointer.clientY
         this.monkey.body.velocity.x=0
         if(swipeCoordX2 < swipeCoordX - swipeMinDistance){
-            console.log("left")
+            //console.log("left")
             swipeLeft=true
 
 
         }else if(swipeCoordX2 > swipeCoordX + swipeMinDistance){
-            console.log("right")
+            //console.log("right")
             swipeRight=true
-        }else if(swipeCoordY2 < swipeCoordY - swipeMinDistance){
-            console.log("up")
-        }else if(swipeCoordY2 > swipeCoordY + swipeMinDistance){
-            console.log("down")
         }
     }, this);      
         
