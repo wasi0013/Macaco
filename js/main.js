@@ -1,4 +1,4 @@
-var game = new Phaser.Game(400,400, Phaser.AUTO, 'gameDiv')
+var game = new Phaser.Game(400,450, Phaser.AUTO, 'gameDiv')
 var player
 var cursors
 var right = true
@@ -12,13 +12,14 @@ var mainState = {
          this.game.load.image('sky','assets/sky.png')
          this.game.load.image('platform','assets/platform.png')
          this.game.load.image('sky','assets/sky.png')
+         this.game.load.spritesheet('chain', 'assets/sprites/chain.png', 16, 26);
           //this.game.load.image('background','assets/tests/debug-grid-1920x1920.png')
     },
     create: function() {
-        //make the GAME full screen 
-        this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL
-        this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
-        this.game.scale.refresh()
+         //make the GAME full screen 
+         this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL
+         this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
+         this.game.scale.refresh()
         
         //start the system
         //this.game.physics.startSystem(Phaser.Physics.P2JS)
@@ -105,6 +106,7 @@ var mainState = {
         
         this.monkey.body.velocity.x=0
         if (cursors.left.isDown){
+            console.log("left")
             this.monkey.body.velocity.x = -350
             this.monkey.animations.play('game')
             if(right) {right =  false
@@ -112,6 +114,7 @@ var mainState = {
             }
         }
         else if (cursors.right.isDown){
+            console.log("right")
             this.monkey.body.velocity.x = 350
             if(!right) {
                 right =  true
@@ -128,6 +131,7 @@ var mainState = {
         //commented for testing purpose, it will allow the monkey to jump infinitely
         //if (cursors.up.isDown && this.monkey.body.touching.down){
         if (cursors.up.isDown ){
+            console.log("up")
             this.monkey.body.velocity.y = -350
             this.monkey.frame = 1
         }
