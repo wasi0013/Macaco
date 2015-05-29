@@ -2,6 +2,8 @@ var game = new Phaser.Game(400,450, Phaser.AUTO, 'gameDiv')
 var player
 var cursors
 var right = true
+var counter=0
+var swipeLeft=false,swipeRight=false
 
 var mainState = {
     preload: function() { 
@@ -88,10 +90,12 @@ var mainState = {
         this.monkey.body.velocity.x=0
         if(swipeCoordX2 < swipeCoordX - swipeMinDistance){
             console.log("left")
+            swipeLeft=true
 
 
         }else if(swipeCoordX2 > swipeCoordX + swipeMinDistance){
             console.log("right")
+            swipeRight=true
         }else if(swipeCoordY2 < swipeCoordY - swipeMinDistance){
             console.log("up")
         }else if(swipeCoordY2 > swipeCoordY + swipeMinDistance){
@@ -103,9 +107,9 @@ var mainState = {
      update: function() {
         //detect monkey and ground collision
         game.physics.arcade.collide(this.monkey, this.ground)
-        
+        counter++
         this.monkey.body.velocity.x=0
-        if (cursors.left.isDown){
+        if (swipeLeft || cursors.left.isDown){
             console.log("left")
             this.monkey.body.velocity.x = -350
             this.monkey.animations.play('game')
@@ -113,7 +117,7 @@ var mainState = {
             this.monkey.scale.x*=-1
             }
         }
-        else if (cursors.right.isDown){
+        else if (swipeRight || cursors.right.isDown){
             console.log("right")
             this.monkey.body.velocity.x = 350
             if(!right) {
@@ -130,10 +134,14 @@ var mainState = {
         }
         //commented for testing purpose, it will allow the monkey to jump infinitely
         //if (cursors.up.isDown && this.monkey.body.touching.down){
-        if (cursors.up.isDown ){
+        if (swipeLeft || swipeRight || cursors.up.isDown ){
             console.log("up")
             this.monkey.body.velocity.y = -350
             this.monkey.frame = 1
+        }
+        if(counter>20){
+            counter=0
+            swipeLeft=swipeRight=false
         }
 
         
