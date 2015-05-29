@@ -30,9 +30,9 @@ var mainState = {
         this.monkey = this.game.add.sprite(50,1000,'monkey')
         this.ground = this.game.add.sprite(0,1200,'platform')
         //apply physics on the objects
-        game.physics.p2.enableBody(this.tree)
-        game.physics.p2.enableBody(this.monkey)
-        game.physics.p2.enableBody(this.ground)
+        game.physics.p2.enable(this.tree)
+        game.physics.p2.enable(this.monkey)
+        game.physics.p2.enable(this.ground)
 
        
         //player = this.game.add.sprite(game.world.centerX, game.world.centerY, 'monkey')
