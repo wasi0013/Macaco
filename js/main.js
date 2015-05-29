@@ -68,6 +68,33 @@ var mainState = {
         
         //keyboard inputs
         cursors = this.game.input.keyboard.createCursorKeys()
+         var swipeCoordX,
+        swipeCoordY,
+        swipeCoordX2,
+        swipeCoordY2,
+        swipeMinDistance = 100
+
+    this.game.input.onDown.add(function(pointer) {
+        swipeCoordX = pointer.clientX
+        swipeCoordY = pointer.clientY    
+    }, this)
+
+    this.game.input.onUp.add(function(pointer) {
+        swipeCoordX2 = pointer.clientX
+        swipeCoordY2 = pointer.clientY
+        this.monkey.body.velocity.x=0
+        if(swipeCoordX2 < swipeCoordX - swipeMinDistance){
+            console.log("left")
+            
+
+        }else if(swipeCoordX2 > swipeCoordX + swipeMinDistance){
+            console.log("right")
+        }else if(swipeCoordY2 < swipeCoordY - swipeMinDistance){
+            console.log("up")
+        }else if(swipeCoordY2 > swipeCoordY + swipeMinDistance){
+            console.log("down")
+        }
+    }, this);      
         
      },
      update: function() {
