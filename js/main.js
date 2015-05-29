@@ -3,7 +3,7 @@ var timer = 60
 var cursors
 var right = true
 var counter=0
-var swipeLeft=false,swipeRight=false, gameWin=false
+var swipeLeft=false,swipeRight=false, isGameRunning=true
 var timerText=null
 var swipeCoordX, swipeCoordY, swipeCoordX2, swipeCoordY2, swipeMinDistance = 100
 
@@ -11,7 +11,7 @@ var mainState = {
     preload: function() { 
          this.game.load.image('tree', 'assets/tree.png')
          this.game.stage.backgroundColor = "#ffffff"
-         this.game.load.spritesheet('monkey','assets/jump.png',82,108)
+         this.game.load.spritesheet('monkey','assets/jumpy.png',82,108)
          this.game.load.image('sky','assets/sky.png')
          this.game.load.image('platform','assets/platform.png')
          this.game.load.image('sky','assets/sky.png')
@@ -27,7 +27,7 @@ var mainState = {
          this.game.scale.refresh()
 
          //initialization of global variables
-         gameWin = false
+         isGameRunning = true
          right = true
          timer = 60
         
@@ -47,21 +47,21 @@ var mainState = {
         game.physics.arcade.enable(this.ground)
         
         //timer ticks interval 1s per tick
-        interval=setInterval(function(){timer-=1},1000)
+        interval=setInterval(function(){timer -= 1},1000)
 
         
         //create animations
-        this.monkey.animations.add('game',[3,0,1,2], 5, true)
+        this.monkey.animations.add('game',[3, 0, 1, 2], 5, true)
         
         //start animation
         this.monkey.animations.play('game')
         
         
          //scales and anchors
-        this.monkey.anchor.setTo(.5,.5)
-        this.monkey.scale.setTo(.8,.8)
-        this.sky.scale.setTo(2,2)
-        this.ground.scale.setTo(1.8,0.8)
+        this.monkey.anchor.setTo(.5, .5)
+        this.monkey.scale.setTo(.8, .8)
+        this.sky.scale.setTo(2, 2)
+        this.ground.scale.setTo(1.8, 0.8)
         
         
         this.monkey.body.gravity.y = 300
@@ -101,8 +101,8 @@ var mainState = {
      },
      update: function() {
 
-        //detect monkey and ground collision
-        if(!gameWin){
+        if(isGameRunning){
+            //detect monkey and ground collision
             game.physics.arcade.collide(this.monkey, this.ground)
             if(timerText!=null)timerText.destroy()
                   timerText = game.add.text(
@@ -125,7 +125,7 @@ var mainState = {
             //if (cursors.up.isDown && this.monkey.body.touching.down){
             this.monkey.body.velocity.x=0
             if (swipeLeft || swipeRight || cursors.up.isDown ){
-                console.log("up")
+                //console.log("up")
                 this.monkey.body.velocity.y = -350
                 this.monkey.frame = 1
             }
@@ -142,7 +142,7 @@ var mainState = {
                 this.monkey.body.velocity.x = 350
                 if(!right) {
                     right =  true
-                    this.monkey.scale.x*=-1
+                    this.monkey.scale.x *= -1
                 }
 
 
@@ -157,9 +157,10 @@ var mainState = {
                 counter=0
                 swipeLeft=swipeRight=false
             }
-            if((350<=this.monkey.body.x && this.monkey.body.x<450) && (50<=this.monkey.body.y && this.monkey.body.y <=130)){
+            if((300<=this.monkey.body.x && this.monkey.body.x<450) && (50<=this.monkey.body.y && this.monkey.body.y <=130)){
                 //console.log("Home Win!")
-                gameWin=true
+                isGameRunning=false
+                this.monkey.frame = 0
                 gameOverText = game.add.text(
                     game.world.width / 2,
                     game.world.height / 2,
