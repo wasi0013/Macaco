@@ -1,9 +1,10 @@
 var game = new Phaser.Game(400,450, Phaser.AUTO, 'gameDiv')
-var player
+var timer = 60
 var cursors
 var right = true
 var counter=0
 var swipeLeft=false,swipeRight=false, gameWin=false
+var timerText=null
 var swipeCoordX, swipeCoordY, swipeCoordX2, swipeCoordY2, swipeMinDistance = 100
 var mainState = {
     preload: function() { 
@@ -25,7 +26,7 @@ var mainState = {
          this.game.scale.refresh()
          gameWin = false
          right = true
-        
+         timer = 60
         //start the system
         //this.game.physics.startSystem(Phaser.Physics.P2JS)
         this.game.physics.startSystem(Phaser.Physics.ARCADE)
@@ -39,6 +40,7 @@ var mainState = {
         game.physics.arcade.enable(this.tree)
         game.physics.arcade.enable(this.monkey)
         game.physics.arcade.enable(this.ground)
+        interval=setInterval(function(){timer-=1},1000)
 
        
         //player = this.game.add.sprite(game.world.centerX, game.world.centerY, 'monkey')
@@ -100,9 +102,27 @@ var mainState = {
         
      },
      update: function() {
+
         //detect monkey and ground collision
         if(!gameWin){
         game.physics.arcade.collide(this.monkey, this.ground)
+        if(timerText!=null)timerText.destroy()
+                  timerText = game.add.text(
+        10,
+        10,
+        "Time: "+timer+"s",
+        {
+            font: '24px Comic Sans MS',
+            fill: '#fff',
+            stroke: '#000',
+            strokeThickness: 2,
+            align: 'center'
+        })
+        timerText.fixedToCamera = true
+        timerText.cameraOffset.setTo(10, 10)
+
+
+
         counter++
          //commented for testing purpose, it will allow the monkey to jump infinitely
         //if (cursors.up.isDown && this.monkey.body.touching.down){
@@ -113,7 +133,7 @@ var mainState = {
             this.monkey.frame = 1
         }
         if (swipeLeft || cursors.left.isDown){
-            console.log("left")
+            //console.log("left")
             this.monkey.body.velocity.x = -350
             this.monkey.animations.play('game')
             if(right) {right =  false
@@ -121,7 +141,7 @@ var mainState = {
             }
         }
         else if (swipeRight || cursors.right.isDown){
-            console.log("right")
+            //console.log("right")
             this.monkey.body.velocity.x = 350
             if(!right) {
                 right =  true
@@ -154,14 +174,15 @@ var mainState = {
             strokeThickness: 4,
             align: 'center'
         })
+        gameOverText.fixedToCamera = true
+        gameOverText.cameraOffset.setTo(60, 200)
         this.button = this.game.add.button(this.game.world.centerX, this.game.world.centerY, 'button', this.actionOnClick, this, 1, 1, 1)
         this.button.anchor.setTo(.5,-1)
         this.button.scale.setTo(.6,.6)
         this.button.onInputUp.add(this.up, this)
-            gameOverText.fixedToCamera = true
-    gameOverText.cameraOffset.setTo(60, 200)
         this.button.fixedToCamera = true
         this.button.cameraOffset.setTo(180,240)
+        clearInterval(interval)
 
         }
     }
@@ -175,25 +196,8 @@ var mainState = {
     render: function() {
 
     //game.debug.cameraInfo(game.camera, 32, 32)
-    game.debug.spriteCoords(this.monkey, 0, 32)
+    //game.debug.spriteCoords(this.monkey, 0, 32)
    },
-    jump: function() { 
-            
-    },
-
-    restartGame: function() {
-        game.state.start('main')
-    },
-    
-    addCreeper: function(x, y) {  
-    
-    },
-    addEnemymonkey: function() {
-   
-    },
-    hitGround: function() {  
-  
-    },
     up: function() {
         //start main state
         this.game.state.add('main', mainState)  
@@ -203,6 +207,9 @@ var mainState = {
      actionOnClick: function(){
        
     },
+    tick: function(){
+        timer-=1
+    }
 }
 
 
@@ -239,17 +246,7 @@ var welcomeScreenState = {
         this.game.state.start('main')
 
     },
-
-    over: function() {
-        console.log('button over')
-    },
-
-    out: function() {
-        console.log('button out')
-    },
-
      actionOnClick: function(){
-        this.background.visible =! this.background.visible
     },
 }
 
