@@ -3,7 +3,7 @@ var player
 var cursors
 var right = true
 var counter=0
-var swipeLeft=false,swipeRight=false
+var swipeLeft=false,swipeRight=false, gameWin=false
 var swipeCoordX, swipeCoordY, swipeCoordX2, swipeCoordY2, swipeMinDistance = 100
 var mainState = {
     preload: function() { 
@@ -100,7 +100,14 @@ var mainState = {
         //detect monkey and ground collision
         game.physics.arcade.collide(this.monkey, this.ground)
         counter++
+         //commented for testing purpose, it will allow the monkey to jump infinitely
+        //if (cursors.up.isDown && this.monkey.body.touching.down){
         this.monkey.body.velocity.x=0
+        if (swipeLeft || swipeRight || cursors.up.isDown ){
+            console.log("up")
+            this.monkey.body.velocity.y = -350
+            this.monkey.frame = 1
+        }
         if (swipeLeft || cursors.left.isDown){
             console.log("left")
             this.monkey.body.velocity.x = -350
@@ -124,16 +131,28 @@ var mainState = {
             this.monkey.animations.stop()
             this.monkey.frame = 5
         }
-        //commented for testing purpose, it will allow the monkey to jump infinitely
-        //if (cursors.up.isDown && this.monkey.body.touching.down){
-        if (swipeLeft || swipeRight || cursors.up.isDown ){
-            console.log("up")
-            this.monkey.body.velocity.y = -350
-            this.monkey.frame = 1
-        }
+       
         if(counter>20){
             counter=0
             swipeLeft=swipeRight=false
+        }
+        if((350<=this.monkey.body.x && this.monkey.body.x<450) && (50<=this.monkey.body.y && this.monkey.body.y <=130)){
+            console.log("Home Win!")
+            gameOverText = game.add.text(
+        game.world.width / 2,
+        game.world.height / 2,
+        "Level Complete",
+        {
+            font: '32px Comic Sans MS',
+            fill: '#fff',
+            stroke: '#430',
+            strokeThickness: 4,
+            align: 'center'
+        }
+    )
+            gameOverText.fixedToCamera = true;
+    gameOverText.cameraOffset.setTo(60, 200);
+
         }
 
         
@@ -141,7 +160,7 @@ var mainState = {
     render: function() {
 
     //game.debug.cameraInfo(game.camera, 32, 32)
-    //game.debug.spriteCoords(this.monkey, 0, 32)
+    game.debug.spriteCoords(this.monkey, 0, 32)
    },
     jump: function() { 
             
