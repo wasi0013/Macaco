@@ -14,7 +14,8 @@ var mainState = {
          this.game.load.image('sky','assets/sky.png')
          this.game.load.image('platform','assets/platform.png')
          this.game.load.image('sky','assets/sky.png')
-         this.game.load.spritesheet('chain', 'assets/sprites/chain.png', 16, 26);
+         this.game.load.spritesheet('chain', 'assets/chain.png', 16, 26)
+         this.game.load.spritesheet('chain', 'assets/btn.png', 193, 71)
           //this.game.load.image('background','assets/tests/debug-grid-1920x1920.png')
     },
     create: function() {
@@ -22,6 +23,8 @@ var mainState = {
          this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL
          this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
          this.game.scale.refresh()
+         gameWin = false
+         right = true
         
         //start the system
         //this.game.physics.startSystem(Phaser.Physics.P2JS)
@@ -30,7 +33,7 @@ var mainState = {
         //add preloaded sprites to the game
         this.sky = this.game.add.sprite(0,0,"sky")
         this.tree = this.game.add.sprite(0,0,"tree")
-        this.monkey = this.game.add.sprite(50,1000,'monkey')
+        this.monkey = this.game.add.sprite(400,1000,'monkey')
         this.ground = this.game.add.sprite(0,1200,'platform')
         //apply physics on the objects
         game.physics.arcade.enable(this.tree)
@@ -98,6 +101,7 @@ var mainState = {
      },
      update: function() {
         //detect monkey and ground collision
+        if(!gameWin){
         game.physics.arcade.collide(this.monkey, this.ground)
         counter++
          //commented for testing purpose, it will allow the monkey to jump infinitely
@@ -138,6 +142,7 @@ var mainState = {
         }
         if((350<=this.monkey.body.x && this.monkey.body.x<450) && (50<=this.monkey.body.y && this.monkey.body.y <=130)){
             console.log("Home Win!")
+            gameWin=true
             gameOverText = game.add.text(
         game.world.width / 2,
         game.world.height / 2,
@@ -148,12 +153,22 @@ var mainState = {
             stroke: '#430',
             strokeThickness: 4,
             align: 'center'
-        }
-    )
-            gameOverText.fixedToCamera = true;
-    gameOverText.cameraOffset.setTo(60, 200);
+        })
+        this.button = this.game.add.button(this.game.world.centerX, this.game.world.centerY, 'button', this.actionOnClick, this, 1, 1, 1)
+        this.button.anchor.setTo(.5,-1)
+        this.button.scale.setTo(.6,.6)
+        this.button.onInputUp.add(this.up, this)
+            gameOverText.fixedToCamera = true
+    gameOverText.cameraOffset.setTo(60, 200)
+        this.button.fixedToCamera = true
+        this.button.cameraOffset.setTo(180,240)
 
         }
+    }
+    else{
+
+
+    }
 
         
     },
@@ -178,6 +193,15 @@ var mainState = {
     },
     hitGround: function() {  
   
+    },
+    up: function() {
+        //start main state
+        this.game.state.add('main', mainState)  
+        this.game.state.start('main')
+
+    },
+     actionOnClick: function(){
+       
     },
 }
 
