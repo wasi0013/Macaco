@@ -22,20 +22,19 @@ var mainState = {
         
         //start the system
         //this.game.physics.startSystem(Phaser.Physics.P2JS)
-        this.game.physics.startSystem(Phaser.Physics.ARCADE)
+        this.game.physics.startSystem(Phaser.Physics.P2JS)
         
         //add preloaded sprites to the game
         this.sky = this.game.add.sprite(0,0,"sky")
         this.tree = this.game.add.sprite(0,0,"tree")
         this.monkey = this.game.add.sprite(50,1000,'monkey')
         this.ground = this.game.add.sprite(0,1200,'platform')
-        
-        //scales and anchors
-        this.monkey.anchor.setTo(.5,.5)
-        this.monkey.scale.setTo(.8,.8)
-        this.sky.scale.setTo(2,2)
-        this.ground.scale.setTo(1.8,0.8)
-        
+        //apply physics on the objects
+        game.physics.p2.enableBody(this.tree)
+        game.physics.p2.enableBody(this.monkey)
+        game.physics.p2.enableBody(this.ground)
+
+       
         //player = this.game.add.sprite(game.world.centerX, game.world.centerY, 'monkey')
         //game.physics.p2.enable(this.monkey)
         // this.back=this.game.add.sprite(0,0,'background')
@@ -47,10 +46,13 @@ var mainState = {
         //start animation
         this.monkey.animations.play('game')
         
-        //apply physics on the objects
-        game.physics.arcade.enable(this.tree)
-        game.physics.arcade.enable(this.monkey)
-        game.physics.arcade.enable(this.ground)
+        
+         //scales and anchors
+        this.monkey.anchor.setTo(.5,.5)
+        this.monkey.scale.setTo(.8,.8)
+        this.sky.scale.setTo(2,2)
+        this.ground.scale.setTo(1.8,0.8)
+        
         
         this.monkey.body.gravity.y = 300
         this.ground.body.gravity.y = 300
@@ -85,7 +87,7 @@ var mainState = {
         this.monkey.body.velocity.x=0
         if(swipeCoordX2 < swipeCoordX - swipeMinDistance){
             console.log("left")
-            
+
 
         }else if(swipeCoordX2 > swipeCoordX + swipeMinDistance){
             console.log("right")
