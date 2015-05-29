@@ -22,7 +22,7 @@ var mainState = {
         
         //start the system
         //this.game.physics.startSystem(Phaser.Physics.P2JS)
-        this.game.physics.startSystem(Phaser.Physics.P2JS)
+        this.game.physics.startSystem(Phaser.Physics.ARCADE)
         
         //add preloaded sprites to the game
         this.sky = this.game.add.sprite(0,0,"sky")
@@ -30,9 +30,9 @@ var mainState = {
         this.monkey = this.game.add.sprite(50,1000,'monkey')
         this.ground = this.game.add.sprite(0,1200,'platform')
         //apply physics on the objects
-        game.physics.p2.enable(this.tree)
-        game.physics.p2.enable(this.monkey)
-        game.physics.p2.enable(this.ground)
+        game.physics.arcade.enable(this.tree)
+        game.physics.arcade.enable(this.monkey)
+        game.physics.arcade.enable(this.ground)
 
        
         //player = this.game.add.sprite(game.world.centerX, game.world.centerY, 'monkey')
