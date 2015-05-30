@@ -113,7 +113,7 @@ var mainState = {
                 console.log("game over")
                 isGameRunning = false
 
-                this.game.add.tween(this.monkey).to({angle: -90}, 100).start()
+                this.game.add.tween(this.monkey).to({angle: right? -90:90}, 100).start()
                 gameOverText = game.add.text(
                     game.world.width / 2,
                     game.world.height / 2,
