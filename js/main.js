@@ -6,6 +6,7 @@ var counter=0
 var swipeLeft=false,swipeRight=false, isGameRunning=true
 var timerText=null
 var swipeCoordX, swipeCoordY, swipeCoordX2, swipeCoordY2, swipeMinDistance = 100
+var isJumped = false
 
 var mainState = {
     preload: function() { 
@@ -30,6 +31,7 @@ var mainState = {
          isGameRunning = true
          right = true
          timer = 60
+         isJumped = false
         
         //start the system
         //this.game.physics.startSystem(Phaser.Physics.P2JS)
@@ -102,8 +104,45 @@ var mainState = {
      update: function() {
 
         if(isGameRunning){
-            //detect monkey and ground collision
-            game.physics.arcade.collide(this.monkey, this.ground)
+            //detect monkey and ground collision 
+             game.physics.arcade.collide(this.monkey, this.ground)
+
+            //console.log(this.monkey.body.touching.down)
+            if(timer==0 || (isJumped && this.monkey.body.touching.down) ){
+                //Game Over
+                console.log("game over")
+                isGameRunning = false
+
+                this.game.add.tween(this.monkey).to({angle: -90}, 100).start()
+                gameOverText = game.add.text(
+                    game.world.width / 2,
+                    game.world.height / 2,
+                    "Game Over",
+                    {
+                        font: '32px Comic Sans MS',
+                        fill: '#fff',
+                        stroke: '#430',
+                        strokeThickness: 4,
+                        align: 'center'
+                    }
+                )
+                gameOverText.fixedToCamera = true
+                gameOverText.cameraOffset.setTo(100, 200)
+                
+                this.button = this.game.add.button(this.game.world.centerX, this.game.world.centerY, 'button', this.actionOnClick, this, 1, 1, 1)
+                this.button.anchor.setTo(.5,-1)
+                this.button.scale.setTo(.6,.6)
+                this.button.onInputUp.add(this.up, this)
+                this.button.fixedToCamera = true
+                this.button.cameraOffset.setTo(180,240)
+                clearInterval(interval)
+
+
+
+
+
+            }
+           
             if(timerText!=null)timerText.destroy()
                   timerText = game.add.text(
                         10,
@@ -126,6 +165,7 @@ var mainState = {
             this.monkey.body.velocity.x=0
             if (swipeLeft || swipeRight || cursors.up.isDown ){
                 //console.log("up")
+                isJumped = true
                 this.monkey.body.velocity.y = -350
                 this.monkey.frame = 1
             }
