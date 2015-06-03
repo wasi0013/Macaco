@@ -34,8 +34,8 @@ var mainState = {
          isJumped = false
         
         //start the system
-        //this.game.physics.startSystem(Phaser.Physics.P2JS)
-        this.game.physics.startSystem(Phaser.Physics.ARCADE)
+        this.game.physics.startSystem(Phaser.Physics.P2JS)
+        //this.game.physics.startSystem(Phaser.Physics.ARCADE)
         
         //add preloaded sprites to the game
         this.sky = this.game.add.sprite(0,0,"sky")
@@ -44,9 +44,12 @@ var mainState = {
         this.ground = this.game.add.sprite(0,1200,'platform')
         
         //apply physics on the objects
-        game.physics.arcade.enable(this.tree)
-        game.physics.arcade.enable(this.monkey)
-        game.physics.arcade.enable(this.ground)
+        //game.physics.p2.enable(this.tree)
+        game.physics.p2.setImpactEvents(true);
+        game.physics.p2.restitution = 0.8;
+
+        game.physics.p2.enable(this.monkey)
+        game.physics.p2.enable(this.ground)
         
         //timer ticks interval 1s per tick
         interval=setInterval(function(){timer -= 1},1000)
@@ -108,7 +111,7 @@ var mainState = {
              game.physics.arcade.collide(this.monkey, this.ground)
 
             //console.log(this.monkey.body.touching.down)
-            if(timer==0 || (isJumped && this.monkey.body.touching.down) ){
+            if(timer<=0 || (isJumped && this.monkey.body.touching.down) ){
                 //Game Over
                 console.log("game over")
                 isGameRunning = false
