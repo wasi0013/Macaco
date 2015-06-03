@@ -109,7 +109,10 @@ var mainState = {
 
         
     //  Length, xAnchor, yAnchor
-    createRope(5, 280, 885)      
+    createRope(5, 280, 885)
+    lastRect = null
+    createRope(5, 572, 744)
+    lastRect = null        
         
      },
      update: function() {
