@@ -112,7 +112,19 @@ var mainState = {
     createRope(5, 280, 885)
     lastRect = null
     createRope(5, 572, 744)
-    lastRect = null        
+    lastRect = null
+    createRope(5,539,590)
+    lastRect=null  
+    createRope(5,232,690)
+    lastRect=null  
+    createRope(5,314,525)
+    lastRect=null  
+    createRope(5,466,395)
+    lastRect=null 
+    createRope(5,293,170)
+    lastRect=null
+    createRope(5,500,250)
+    lastRect=null 
         
      },
      update: function() {
