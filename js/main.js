@@ -24,12 +24,9 @@ var mainState = {
     },
 
     create: function() {
-
-         //make the GAME full screen 
-         this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL
-         this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
-         this.game.scale.refresh()
-
+        //makes phaser state go Full Screen
+        fullScreenMode()
+         
          //initialization of global variables
          isGameRunning = true
          right = true
@@ -38,7 +35,9 @@ var mainState = {
         
         //start the system
         this.game.physics.startSystem(Phaser.Physics.P2JS)
-        //this.game.physics.startSystem(Phaser.Physics.ARCADE)
+        this.game.physics.p2.setImpactEvents(true)
+        this.game.physics.p2.restitution = 0.8
+        this.game.physics.p2.gravity.y = 12000
         
         //add preloaded sprites to the game
         this.sky = this.game.add.sprite(0,0,"sky")
@@ -46,13 +45,10 @@ var mainState = {
         this.monkey = this.game.add.sprite(400,1100,'monkey')
         this.ground = this.game.add.sprite(0,1200,'platform')
         
+        
         //apply physics on the objects
-        //game.physics.p2.enable(this.tree)
-        game.physics.p2.setImpactEvents(true)
-        game.physics.p2.restitution = 0.8
-        game.physics.p2.enable(this.monkey)
-        game.physics.p2.enable(this.ground)
-        game.physics.p2.gravity.y=12000
+        this.game.physics.p2.enable(this.monkey)
+        this.game.physics.p2.enable(this.ground)
         this.monkey.body.fixedRotation = true
         
         //timer ticks interval 1s per tick
@@ -290,11 +286,7 @@ var welcomeScreenState = {
     },
 
     create: function() {
-        //make the GAME full screen 
-        this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL
-        this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
-        this.game.scale.refresh()
-
+        fullScreenMode()
         this.game.stage.backgroundColor = '#182d3b'
         this.background = this.game.add.tileSprite(0, 0, 900, 1200, 'background')
         
@@ -318,6 +310,7 @@ var welcomeScreenState = {
 
 game.state.add('welcomeScreen',welcomeScreenState)
 game.state.start('welcomeScreen')
+
 
 function createRope(length, xAnchor, yAnchor) {
 
@@ -369,5 +362,12 @@ function createRope(length, xAnchor, yAnchor) {
 
     }
 
+}
+
+function fullScreenMode(){
+    //make the GAME full screen 
+        this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL
+        this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
+        this.game.scale.refresh()
 }
 
