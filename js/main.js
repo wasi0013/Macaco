@@ -7,6 +7,8 @@ var swipeLeft=false,swipeRight=false, isGameRunning=true
 var timerText=null
 var swipeCoordX, swipeCoordY, swipeCoordX2, swipeCoordY2, swipeMinDistance = 100
 var isJumped = false
+var flipper=true
+var lastRect
 
 var mainState = {
     preload: function() { 
@@ -18,6 +20,7 @@ var mainState = {
          this.game.load.image('sky','assets/sky.png')
          this.game.load.spritesheet('chain', 'assets/chain.png', 16, 26)
          this.game.load.spritesheet('chain', 'assets/btn.png', 193, 71)
+         this.game.load.spritesheet('chain', 'assets/chain.png', 16, 26);
     },
 
     create: function() {
@@ -40,16 +43,17 @@ var mainState = {
         //add preloaded sprites to the game
         this.sky = this.game.add.sprite(0,0,"sky")
         this.tree = this.game.add.sprite(0,0,"tree")
-        this.monkey = this.game.add.sprite(400,1000,'monkey')
+        this.monkey = this.game.add.sprite(400,1100,'monkey')
         this.ground = this.game.add.sprite(0,1200,'platform')
         
         //apply physics on the objects
         //game.physics.p2.enable(this.tree)
-        game.physics.p2.setImpactEvents(true);
-        game.physics.p2.restitution = 0.8;
-
+        game.physics.p2.setImpactEvents(true)
+        game.physics.p2.restitution = 0.8
         game.physics.p2.enable(this.monkey)
         game.physics.p2.enable(this.ground)
+        game.physics.p2.gravity.y=12000
+        this.monkey.body.fixedRotation = true
         
         //timer ticks interval 1s per tick
         interval=setInterval(function(){timer -= 1},1000)
@@ -66,12 +70,12 @@ var mainState = {
         this.monkey.anchor.setTo(.5, .5)
         this.monkey.scale.setTo(.8, .8)
         this.sky.scale.setTo(2, 2)
-        this.ground.scale.setTo(1.8, 0.8)
+        this.ground.scale.setTo(4, 1.8)
         
         
-        this.monkey.body.gravity.y = 300
-        this.ground.body.gravity.y = 300
+        this.monkey.body.gravity.y = 1300
         this.ground.body.immovable = true
+        this.ground.body.static = true
 
         // stop falling from the world's bound
         this.monkey.body.collideWorldBounds = true
@@ -101,7 +105,11 @@ var mainState = {
                 //console.log("right")
                 swipeRight=true
             }
-        }, this);      
+        }, this)
+
+        
+    //  Length, xAnchor, yAnchor
+    createRope(5, 280, 885)      
         
      },
      update: function() {
@@ -111,7 +119,8 @@ var mainState = {
              game.physics.arcade.collide(this.monkey, this.ground)
 
             //console.log(this.monkey.body.touching.down)
-            if(timer<=0 || (isJumped && this.monkey.body.touching.down) ){
+            //if(timer<=0 || (isJumped && this.monkey.body.touching.down) ){
+            if(timer<=0 || (isJumped && false) ){
                 //Game Over
                 console.log("game over")
                 isGameRunning = false
@@ -165,7 +174,7 @@ var mainState = {
             
             //commented for testing purpose, it will allow the monkey to jump infinitely
             //if (cursors.up.isDown && this.monkey.body.touching.down){
-            this.monkey.body.velocity.x=0
+            this.monkey.body.setZeroVelocity()
             if (swipeLeft || swipeRight || cursors.up.isDown ){
                 //console.log("up")
                 isJumped = true
@@ -174,7 +183,7 @@ var mainState = {
             }
             if (swipeLeft || cursors.left.isDown){
                 //console.log("left")
-                this.monkey.body.velocity.x = -350
+                this.monkey.body.moveLeft(350)
                 this.monkey.animations.play('game')
                 if(right) {right =  false
                 this.monkey.scale.x*=-1
@@ -239,7 +248,7 @@ var mainState = {
     render: function() {
 
     //game.debug.cameraInfo(game.camera, 32, 32)
-    //game.debug.spriteCoords(this.monkey, 0, 32)
+    game.debug.spriteCoords(this.monkey, 0, 32)
    },
     up: function() {
         //start main state
@@ -294,3 +303,56 @@ var welcomeScreenState = {
 
 game.state.add('welcomeScreen',welcomeScreenState)
 game.state.start('welcomeScreen')
+
+function createRope(length, xAnchor, yAnchor) {
+
+    var height = 20;        //  Height for the physics body - your image height is 8px
+    var width = 16;         //  This is the width for the physics body. If too small the rectangles will get scrambled together.
+    var maxForce = 20000;   //  The force that holds the rectangles together.
+
+    for (var i = 0; i <= length; i++)
+    {
+        var x = xAnchor;                    //  All rects are on the same x position
+        var y = yAnchor + (i * height);     //  Every new rect is positioned below the last
+
+        if (i % 2 === 0)
+        {
+            //  Add sprite (and switch frame every 2nd time)
+            newRect = game.add.sprite(x, y, 'chain', 1);
+
+        } 
+        else
+        {
+            newRect = game.add.sprite(x, y, 'chain', 1);
+            lastRect.bringToTop();
+        }
+
+        //  Enable physicsbody
+        game.physics.p2.enable(newRect, false);
+
+        //  Set custom rectangle
+        newRect.body.setRectangle(width, height);
+
+        if (i === 0)
+        {
+            newRect.body.static = true;
+        }
+        else
+        {  
+            //  Anchor the first one created
+            newRect.body.velocity.x = 400;      //  Give it a push :) just for fun
+            newRect.body.mass = length / i;     //  Reduce mass for evey rope element
+        }
+
+        //  After the first rectangle is created we can add the constraint
+        if (lastRect)
+        {
+            game.physics.p2.createRevoluteConstraint(newRect, [0, -10], lastRect, [0, 10], maxForce);
+        }
+
+        lastRect = newRect;
+
+    }
+
+}
+
