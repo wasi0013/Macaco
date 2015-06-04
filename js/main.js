@@ -50,6 +50,8 @@ var mainState = {
         this.game.physics.p2.enable(this.monkey)
         this.game.physics.p2.enable(this.ground)
         this.monkey.body.fixedRotation = true
+        //this.monkey.setRectangle(40,40)
+        this.monkey.body.setRectangle(40, 40)
         
         //timer ticks interval 1s per tick
         interval=setInterval(function(){timer -= 1},1000)
@@ -239,7 +241,7 @@ var mainState = {
                 gameOverText.fixedToCamera = true
                 gameOverText.cameraOffset.setTo(60, 200)
                 
-                this.button = this.game.add.button(this.game.world.centerX, this.game.world.centerY, 'button', this.actionOnClick, this, 1, 1, 1)
+                this.button = this.game.add.button(this.game.world.centerX, this.game.world.centerY, 'button', this.actionOnClick, this)
                 this.button.anchor.setTo(.5,-1)
                 this.button.scale.setTo(.6,.6)
                 this.button.onInputUp.add(this.up, this)
@@ -281,7 +283,7 @@ var background
 
 var welcomeScreenState = {
     preload: function() {
-    this.game.load.spritesheet('button', 'assets/button_sprite_sheet.png', 193, 71)
+    this.game.load.spritesheet('button', 'assets/btn.png', 193, 71)
     this.game.load.image('background','assets/screen.png')
     },
 
@@ -326,7 +328,7 @@ function createRope(length, xAnchor, yAnchor) {
         if (i % 2 === 0)
         {
             //  Add sprite (and switch frame every 2nd time)
-            newRect = game.add.sprite(x, y, 'chain', 1);
+            newRect = game.add.sprite(x, y, 'chain', 1)
 
         } 
         else
