@@ -25,7 +25,7 @@ var mainState = {
          this.game.load.image('sky','assets/sky.png')
          this.game.load.spritesheet('chain', 'assets/chain.png', 16, 26)
          this.game.load.spritesheet('chain', 'assets/btn.png', 193, 71)
-         this.game.load.spritesheet('chain', 'assets/chain.png', 16, 26);
+         this.game.load.spritesheet('chain', 'assets/chain.png', 16, 26)
     },
 
     create: function() {
@@ -99,6 +99,7 @@ var mainState = {
         // stop falling from the world's bound
         this.monkey.body.collideWorldBounds = true
         this.ground.body.collideWorldBounds = true
+        this.ground.body.onBeginContact.add(isGrounded, this)
 
                 
         //camera bounds and activate follow
@@ -343,14 +344,14 @@ game.state.start('welcomeScreen')
 
 function createRope(length, xAnchor, yAnchor) {
 
-    var height = 20;        //  Height for the physics body - your image height is 8px
-    var width = 16;         //  This is the width for the physics body. If too small the rectangles will get scrambled together.
-    var maxForce = 20000;   //  The force that holds the rectangles together.
+    var height = 20        //  Height for the physics body - your image height is 8px
+    var width = 16         //  This is the width for the physics body. If too small the rectangles will get scrambled together.
+    var maxForce = 20000   //  The force that holds the rectangles together.
 
     for (var i = 0; i <= length; i++)
     {
-        var x = xAnchor;                    //  All rects are on the same x position
-        var y = yAnchor + (i * height);     //  Every new rect is positioned below the last
+        var x = xAnchor                    //  All rects are on the same x position
+        var y = yAnchor + (i * height)     //  Every new rect is positioned below the last
 
         if (i % 2 === 0)
         {
@@ -360,12 +361,12 @@ function createRope(length, xAnchor, yAnchor) {
         } 
         else
         {
-            newRect = game.add.sprite(x, y, 'chain', 1);
-            lastRect.bringToTop();
+            newRect = game.add.sprite(x, y, 'chain', 1)
+            lastRect.bringToTop()
         }
 
         //  Enable physicsbody
-        game.physics.p2.enable(newRect, false);
+        game.physics.p2.enable(newRect, false)
 
         //  Set custom rectangle
         //newRect.body.setCollisionGroup(this.ropeCollisionGroup)
@@ -373,23 +374,26 @@ function createRope(length, xAnchor, yAnchor) {
         
         if (i === 0)
         {
-            newRect.body.static = true;
+            newRect.body.static = true
         }
         else
         {  
             //  Anchor the first one created
-            newRect.body.velocity.x = 400;      //  Give it a push :) just for fun
-        
-            newRect.body.mass = length / i;     //  Reduce mass for evey rope element
+            newRect.body.velocity.x = 400
+            newRect.body.damping = 0
+            newRect.body.restitution = 1
+            newRect.body.gravity.x = 0
+            newRect.body.gravity.y = 0      //  Give it a push :) just for fun
+            newRect.body.mass = length / i     //  Reduce mass for evey rope element
         }
 
         //  After the first rectangle is created we can add the constraint
         if (lastRect)
         {
-            game.physics.p2.createRevoluteConstraint(newRect, [0, -10], lastRect, [0, 10], maxForce);
+            game.physics.p2.createRevoluteConstraint(newRect, [0, -10], lastRect, [0, 10], maxForce)
         }
 
-        lastRect = newRect;
+        lastRect = newRect
 
     }
 
