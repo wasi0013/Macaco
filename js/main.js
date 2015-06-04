@@ -47,7 +47,7 @@ var mainState = {
         monkeyCollisionGroup = game.physics.p2.createCollisionGroup()
         ropeCollisionGroup = game.physics.p2.createCollisionGroup()
         groundCollisionGroup = game.physics.p2.createCollisionGroup()
- 
+        
         
         //add preloaded sprites to the game
         this.sky = this.game.add.sprite(0,0,"sky")
@@ -85,9 +85,19 @@ var mainState = {
         this.ground.body.gravity.y = 0
         this.ground.body.immovable = true
         this.ground.body.static = true
-
-        // stop falling from the world's bound
         
+        //update world bounds with the new constraints
+        this.game.physics.p2.updateBoundsCollisionGroup()
+
+        //this.monkey.body.setCollisionGroup(monkeyCollisionGroup)
+        //this.ground.body.setCollisionGroup(groundCollisionGroup)
+        //this.monkey.body.collides([groundCollisionGroup,ropeCollisionGroup])
+
+        
+        // stop falling from the world's bound
+        this.monkey.body.collideWorldBounds = true
+        this.ground.body.collideWorldBounds = true
+
                 
         //camera bounds and activate follow
         this.game.world.setBounds(0, 0, 900, 1200)
@@ -134,14 +144,7 @@ var mainState = {
     createRope(5,500,250)
     lastRect=null 
 
-    //update world bounds with the new constraints
-    this.monkey.body.collideWorldBounds = true
-    this.ground.body.collideWorldBounds = true
-    //this.game.physics.p2.updateBoundsCollisionGroup()
-
-    //this.monkey.body.setCollisionGroup(monkeyCollisionGroup)
-    //this.ground.body.setCollisionGroup(groundCollisionGroup)
-    //this.monkey.body.collides([groundCollisionGroup,ropeCollisionGroup])
+    
         
      },
      update: function() {
@@ -245,7 +248,7 @@ var mainState = {
             if((300<=this.monkey.body.x && this.monkey.body.x<450) && (50<=this.monkey.body.y && this.monkey.body.y <=130)){
                 //console.log("Home Win!")
                 isGameRunning=false
-                this.monkey.frame = 0
+                this.monkey.destroy()
                 gameOverText = game.add.text(
                     game.world.width / 2,
                     game.world.height / 2,
@@ -295,6 +298,7 @@ var mainState = {
     tick: function(){
         timer-=1
     }
+
 }
 
 
@@ -372,6 +376,7 @@ function createRope(length, xAnchor, yAnchor) {
         {  
             //  Anchor the first one created
             newRect.body.velocity.x = 400;      //  Give it a push :) just for fun
+        
             newRect.body.mass = length / i;     //  Reduce mass for evey rope element
         }
 
@@ -394,3 +399,8 @@ function fullScreenMode(){
         this.game.scale.refresh()
 }
 
+function isCreeperHolded(){
+
+
+     this.game.debug.text('Collide with rope!', 32, 32);
+}
