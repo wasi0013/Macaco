@@ -6,9 +6,10 @@ var counter=0
 var swipeLeft=false,swipeRight=false, isGameRunning=true
 var timerText=null
 var swipeCoordX, swipeCoordY, swipeCoordX2, swipeCoordY2, swipeMinDistance = 100
-var isJumped = false
+var isJumped = false, touchingGround = true
 var flipper=true
 var lastRect
+
 //collisions for P2 Physics
 var monkeyCollisionGroup 
 var ropeCollisionGroup 
@@ -31,11 +32,12 @@ var mainState = {
         //makes phaser state go Full Screen
         fullScreenMode()
          
-         //initialization of global variables
-         isGameRunning = true
-         right = true
-         timer = 60
-         isJumped = false
+        //initialization of global variables
+        isGameRunning = true
+        right = true
+        timer = 60
+        isJumped = false
+        touchingGround = true
         
         //start the system
         this.game.physics.startSystem(Phaser.Physics.P2JS)
@@ -43,6 +45,7 @@ var mainState = {
         this.game.physics.p2.setImpactEvents(true)
         this.game.physics.p2.restitution = 0.8
         this.game.physics.p2.gravity.y = 12000
+        
         //collisions for P2 Physics
         monkeyCollisionGroup = game.physics.p2.createCollisionGroup()
         ropeCollisionGroup = game.physics.p2.createCollisionGroup()
@@ -87,8 +90,7 @@ var mainState = {
         this.ground.body.static = true
         
         //update world bounds with the new constraints
-        this.game.physics.p2.updateBoundsCollisionGroup()
-
+        //this.game.physics.p2.updateBoundsCollisionGroup()
         //this.monkey.body.setCollisionGroup(monkeyCollisionGroup)
         //this.ground.body.setCollisionGroup(groundCollisionGroup)
         //this.monkey.body.collides([groundCollisionGroup,ropeCollisionGroup])
@@ -155,7 +157,7 @@ var mainState = {
 
             //console.log(this.monkey.body.touching.down)
             //if(timer<=0 || (isJumped && this.monkey.body.touching.down) ){
-            if(timer<=0 || (isJumped && false) ){
+            if(timer<=0 || (isJumped && touchingGround) ){
                 //Game Over
                 console.log("game over")
                 isGameRunning = false
@@ -213,6 +215,7 @@ var mainState = {
             if (swipeLeft || swipeRight || cursors.up.isDown ){
                 //console.log("up")
                 isJumped = true
+                touchingGround = false
                 this.monkey.body.moveUp(700)
                 this.monkey.body.thrust(500)
                 this.monkey.frame = 1
@@ -399,8 +402,8 @@ function fullScreenMode(){
         this.game.scale.refresh()
 }
 
-function isCreeperHolded(){
+function isGrounded(){
 
-
-     this.game.debug.text('Collide with rope!', 32, 32);
+        touchingGround = true
+     
 }
