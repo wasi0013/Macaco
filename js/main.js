@@ -9,6 +9,10 @@ var swipeCoordX, swipeCoordY, swipeCoordX2, swipeCoordY2, swipeMinDistance = 100
 var isJumped = false
 var flipper=true
 var lastRect
+//collisions for P2 Physics
+var monkeyCollisionGroup 
+var ropeCollisionGroup 
+var groundCollisionGroup  
 
 var mainState = {
     preload: function() { 
@@ -35,22 +39,27 @@ var mainState = {
         
         //start the system
         this.game.physics.startSystem(Phaser.Physics.P2JS)
+        
         this.game.physics.p2.setImpactEvents(true)
         this.game.physics.p2.restitution = 0.8
         this.game.physics.p2.gravity.y = 12000
+        //collisions for P2 Physics
+        monkeyCollisionGroup = game.physics.p2.createCollisionGroup()
+        ropeCollisionGroup = game.physics.p2.createCollisionGroup()
+        groundCollisionGroup = game.physics.p2.createCollisionGroup()
+ 
         
         //add preloaded sprites to the game
         this.sky = this.game.add.sprite(0,0,"sky")
         this.tree = this.game.add.sprite(0,0,"tree")
-        this.monkey = this.game.add.sprite(400,1100,'monkey')
         this.ground = this.game.add.sprite(0,1200,'platform')
+        this.monkey = this.game.add.sprite(400,1000,'monkey')
         
         
         //apply physics on the objects
         this.game.physics.p2.enable(this.monkey)
         this.game.physics.p2.enable(this.ground)
         this.monkey.body.fixedRotation = true
-        //this.monkey.setRectangle(40,40)
         this.monkey.body.setRectangle(40, 40)
         
         //timer ticks interval 1s per tick
@@ -69,15 +78,16 @@ var mainState = {
         this.monkey.scale.setTo(.8, .8)
         this.sky.scale.setTo(2, 2)
         this.ground.scale.setTo(4, 1.8)
+        this.ground.body.setRectangle(2000,100)
         
         
         this.monkey.body.gravity.y = 1300
+        this.ground.body.gravity.y = 0
         this.ground.body.immovable = true
         this.ground.body.static = true
 
         // stop falling from the world's bound
-        this.monkey.body.collideWorldBounds = true
-        this.ground.body.collideWorldBounds = true
+        
                 
         //camera bounds and activate follow
         this.game.world.setBounds(0, 0, 900, 1200)
@@ -123,13 +133,22 @@ var mainState = {
     lastRect=null
     createRope(5,500,250)
     lastRect=null 
+
+    //update world bounds with the new constraints
+    this.monkey.body.collideWorldBounds = true
+    this.ground.body.collideWorldBounds = true
+    //this.game.physics.p2.updateBoundsCollisionGroup()
+
+    //this.monkey.body.setCollisionGroup(monkeyCollisionGroup)
+    //this.ground.body.setCollisionGroup(groundCollisionGroup)
+    //this.monkey.body.collides([groundCollisionGroup,ropeCollisionGroup])
         
      },
      update: function() {
 
         if(isGameRunning){
             //detect monkey and ground collision 
-             game.physics.arcade.collide(this.monkey, this.ground)
+            //game.physics.arcade.collide(this.monkey, this.ground)
 
             //console.log(this.monkey.body.touching.down)
             //if(timer<=0 || (isJumped && this.monkey.body.touching.down) ){
@@ -191,12 +210,13 @@ var mainState = {
             if (swipeLeft || swipeRight || cursors.up.isDown ){
                 //console.log("up")
                 isJumped = true
-                this.monkey.body.velocity.y = -350
+                this.monkey.body.moveUp(700)
+                this.monkey.body.thrust(500)
                 this.monkey.frame = 1
             }
             if (swipeLeft || cursors.left.isDown){
                 //console.log("left")
-                this.monkey.body.moveLeft(350)
+                this.monkey.body.moveLeft(700)
                 this.monkey.animations.play('game')
                 if(right) {right =  false
                 this.monkey.scale.x*=-1
@@ -204,7 +224,7 @@ var mainState = {
             }
             else if (swipeRight || cursors.right.isDown){
                 //console.log("right")
-                this.monkey.body.velocity.x = 350
+                this.monkey.body.moveRight(700)
                 if(!right) {
                     right =  true
                     this.monkey.scale.x *= -1
@@ -341,8 +361,9 @@ function createRope(length, xAnchor, yAnchor) {
         game.physics.p2.enable(newRect, false);
 
         //  Set custom rectangle
-        newRect.body.setRectangle(width, height);
-
+        //newRect.body.setCollisionGroup(this.ropeCollisionGroup)
+        newRect.body.setRectangle(width, height)
+        
         if (i === 0)
         {
             newRect.body.static = true;
