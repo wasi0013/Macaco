@@ -6,7 +6,7 @@ var counter=0
 var swipeLeft=false,swipeRight=false, isGameRunning=true
 var timerText=null
 var swipeCoordX, swipeCoordY, swipeCoordX2, swipeCoordY2, swipeMinDistance = 100
-var isJumped = false, touchingGround = true
+var isJumped = false, touchingGround = true ,touchingRopes = false
 var flipper=true
 var lastRect
 
@@ -38,6 +38,7 @@ var mainState = {
         timer = 60
         isJumped = false
         touchingGround = true
+        touchingRopes = false
         
         //start the system
         this.game.physics.startSystem(Phaser.Physics.P2JS)
@@ -84,8 +85,7 @@ var mainState = {
         this.ground.body.setRectangle(2000,100)
         
         
-        this.monkey.body.gravity.y = 1300
-        this.ground.body.gravity.y = 0
+        this.ground.body.gravity.y = 10000
         this.ground.body.immovable = true
         this.ground.body.static = true
         
@@ -100,6 +100,7 @@ var mainState = {
         this.monkey.body.collideWorldBounds = true
         this.ground.body.collideWorldBounds = true
         this.ground.body.onBeginContact.add(isGrounded, this)
+        this.monkey.body.onBeginContact.add(isRoped, this)
 
                 
         //camera bounds and activate follow
@@ -401,16 +402,32 @@ function createRope(length, xAnchor, yAnchor) {
 
 function fullScreenMode(){
     //make the GAME full screen 
+        if (this.game.device.desktop)
+        {
+            this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL
+            this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
+            this.game.scale.setMinMax(480, 450, 1024, 768);
+        }
+        else{
         this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL
         this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
         this.game.scale.pageAlignHorizontally = true
         this.game.scale.pageAlignVertically = true
         this.game.scale.forceOrientation(true, false);
+        }
         this.game.scale.refresh()
+        
 }
 
 function isGrounded(){
 
         touchingGround = true
+        touchingRopes = false
      
+}
+function isRoped(){
+    if(!touchingGround){
+        touchingRopes = true
+        console.log("touching Ropes")
+    }
 }
