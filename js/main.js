@@ -6,9 +6,10 @@ var counter=0
 var swipeLeft=false,swipeRight=false, isGameRunning=true
 var timerText=null
 var swipeCoordX, swipeCoordY, swipeCoordX2, swipeCoordY2, swipeMinDistance = 100
-var isJumped = false
+var isJumped = false, touchingGround = true ,touchingRopes = false
 var flipper=true
 var lastRect
+
 //collisions for P2 Physics
 var monkeyCollisionGroup 
 var ropeCollisionGroup 
@@ -24,18 +25,20 @@ var mainState = {
          this.game.load.image('sky','assets/sky.png')
          this.game.load.spritesheet('chain', 'assets/chain.png', 16, 26)
          this.game.load.spritesheet('chain', 'assets/btn.png', 193, 71)
-         this.game.load.spritesheet('chain', 'assets/chain.png', 16, 26);
+         this.game.load.spritesheet('chain', 'assets/chain.png', 16, 26)
     },
 
     create: function() {
         //makes phaser state go Full Screen
         fullScreenMode()
          
-         //initialization of global variables
-         isGameRunning = true
-         right = true
-         timer = 60
-         isJumped = false
+        //initialization of global variables
+        isGameRunning = true
+        right = true
+        timer = 60
+        isJumped = false
+        touchingGround = true
+        touchingRopes = false
         
         //start the system
         this.game.physics.startSystem(Phaser.Physics.P2JS)
@@ -43,6 +46,7 @@ var mainState = {
         this.game.physics.p2.setImpactEvents(true)
         this.game.physics.p2.restitution = 0.8
         this.game.physics.p2.gravity.y = 12000
+        
         //collisions for P2 Physics
         monkeyCollisionGroup = game.physics.p2.createCollisionGroup()
         ropeCollisionGroup = game.physics.p2.createCollisionGroup()
@@ -81,14 +85,12 @@ var mainState = {
         this.ground.body.setRectangle(2000,100)
         
         
-        this.monkey.body.gravity.y = 1300
-        this.ground.body.gravity.y = 0
+        this.ground.body.gravity.y = 10000
         this.ground.body.immovable = true
         this.ground.body.static = true
         
         //update world bounds with the new constraints
-        this.game.physics.p2.updateBoundsCollisionGroup()
-
+        //this.game.physics.p2.updateBoundsCollisionGroup()
         //this.monkey.body.setCollisionGroup(monkeyCollisionGroup)
         //this.ground.body.setCollisionGroup(groundCollisionGroup)
         //this.monkey.body.collides([groundCollisionGroup,ropeCollisionGroup])
@@ -97,6 +99,8 @@ var mainState = {
         // stop falling from the world's bound
         this.monkey.body.collideWorldBounds = true
         this.ground.body.collideWorldBounds = true
+        this.ground.body.onBeginContact.add(isGrounded, this)
+        this.monkey.body.onBeginContact.add(isRoped, this)
 
                 
         //camera bounds and activate follow
@@ -155,7 +159,7 @@ var mainState = {
 
             //console.log(this.monkey.body.touching.down)
             //if(timer<=0 || (isJumped && this.monkey.body.touching.down) ){
-            if(timer<=0 || (isJumped && false) ){
+            if(timer<=0 || (isJumped && touchingGround) ){
                 //Game Over
                 console.log("game over")
                 isGameRunning = false
@@ -213,6 +217,7 @@ var mainState = {
             if (swipeLeft || swipeRight || cursors.up.isDown ){
                 //console.log("up")
                 isJumped = true
+                touchingGround = false
                 this.monkey.body.moveUp(700)
                 this.monkey.body.thrust(500)
                 this.monkey.frame = 1
@@ -340,14 +345,14 @@ game.state.start('welcomeScreen')
 
 function createRope(length, xAnchor, yAnchor) {
 
-    var height = 20;        //  Height for the physics body - your image height is 8px
-    var width = 16;         //  This is the width for the physics body. If too small the rectangles will get scrambled together.
-    var maxForce = 20000;   //  The force that holds the rectangles together.
+    var height = 20        //  Height for the physics body - your image height is 8px
+    var width = 16         //  This is the width for the physics body. If too small the rectangles will get scrambled together.
+    var maxForce = 20000   //  The force that holds the rectangles together.
 
     for (var i = 0; i <= length; i++)
     {
-        var x = xAnchor;                    //  All rects are on the same x position
-        var y = yAnchor + (i * height);     //  Every new rect is positioned below the last
+        var x = xAnchor                    //  All rects are on the same x position
+        var y = yAnchor + (i * height)     //  Every new rect is positioned below the last
 
         if (i % 2 === 0)
         {
@@ -357,12 +362,12 @@ function createRope(length, xAnchor, yAnchor) {
         } 
         else
         {
-            newRect = game.add.sprite(x, y, 'chain', 1);
-            lastRect.bringToTop();
+            newRect = game.add.sprite(x, y, 'chain', 1)
+            lastRect.bringToTop()
         }
 
         //  Enable physicsbody
-        game.physics.p2.enable(newRect, false);
+        game.physics.p2.enable(newRect, false)
 
         //  Set custom rectangle
         //newRect.body.setCollisionGroup(this.ropeCollisionGroup)
@@ -370,23 +375,26 @@ function createRope(length, xAnchor, yAnchor) {
         
         if (i === 0)
         {
-            newRect.body.static = true;
+            newRect.body.static = true
         }
         else
         {  
             //  Anchor the first one created
-            newRect.body.velocity.x = 400;      //  Give it a push :) just for fun
-        
-            newRect.body.mass = length / i;     //  Reduce mass for evey rope element
+            newRect.body.velocity.x = 400
+            newRect.body.damping = 0
+            newRect.body.restitution = 1
+            newRect.body.gravity.x = 0
+            newRect.body.gravity.y = 0      //  Give it a push :) just for fun
+            newRect.body.mass = length / i     //  Reduce mass for evey rope element
         }
 
         //  After the first rectangle is created we can add the constraint
         if (lastRect)
         {
-            game.physics.p2.createRevoluteConstraint(newRect, [0, -10], lastRect, [0, 10], maxForce);
+            game.physics.p2.createRevoluteConstraint(newRect, [0, -10], lastRect, [0, 10], maxForce)
         }
 
-        lastRect = newRect;
+        lastRect = newRect
 
     }
 
@@ -394,13 +402,32 @@ function createRope(length, xAnchor, yAnchor) {
 
 function fullScreenMode(){
     //make the GAME full screen 
+        if (this.game.device.desktop)
+        {
+            this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL
+            this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
+            this.game.scale.setMinMax(480, 450, 1024, 768);
+        }
+        else{
         this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL
         this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
+        this.game.scale.pageAlignHorizontally = true
+        this.game.scale.pageAlignVertically = true
+        this.game.scale.forceOrientation(true, false);
+        }
         this.game.scale.refresh()
+        
 }
 
-function isCreeperHolded(){
+function isGrounded(){
 
-
-     this.game.debug.text('Collide with rope!', 32, 32);
+        touchingGround = true
+        touchingRopes = false
+     
+}
+function isRoped(){
+    if(!touchingGround){
+        touchingRopes = true
+        console.log("touching Ropes")
+    }
 }
